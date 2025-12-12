@@ -12,6 +12,7 @@ For each day of the trip, it provides recommendations in the following categorie
 - Lunch: Restaurants
 - Afternoon: Activities including arts, landmarks, museums, shopping, and/or parks
 - Dinner: Restaurants
+
 Each category has a top suggestion along with three alternate options (if applicable) to give the user more choices. Recommendations are pulled from the Yelp API and filtered to avoid repetition/duplicates across the planner.
 
 Technicalities:
