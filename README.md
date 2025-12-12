@@ -21,3 +21,5 @@ Technicalities:
 - Frontend: HTML/CSS templates for display and user input
 - Logic: Shuffle business data to add variety and avoid duplicates, provide alternate suggestions for more choice, and generate itinerary based on user-inputted location and trip length.
 
+Reflection:
+I learned a lot from this project, especially since it is my first time working with an API. It was challenging to learn how to process such large portions of data, and to determine how it would be best applied to my project. With such an in-depth API as Yelp Places API, finding the initial direction of the project was a challenge. I also learned a lot of organizational skills (such as using Jinja2 templates) to better organize my project. 
