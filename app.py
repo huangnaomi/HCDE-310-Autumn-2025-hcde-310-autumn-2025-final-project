@@ -7,7 +7,7 @@ app = Flask(__name__)
 YELP_URL = "https://api.yelp.com/v3/businesses/search"
 
 # get businesses from yelp api
-def get_yelp(city, category, limit=10):
+def get_yelp(city, category, limit=20):
     headers = {"Authorization": f"Bearer {YELP_API_KEY}"}
     params = {
         "location": city,
@@ -39,47 +39,37 @@ def get_afternoon_activities(city):
 
 # build daily itinerary & prevent duplicates
 def build_itinerary(days, cafes, restaurants, sights, max_alternates=3):
-    # shuffle to reduce repetition
+    #shuffle to prevent repetition
     random.shuffle(cafes)
     random.shuffle(restaurants)
     random.shuffle(sights)
-    # keep track of used locations because i was getting a lot of duplicates :(
-    used_cafes = set()
-    used_restaurants = set()
-    used_sights = set()
+
+    used_tops = set()
     itinerary = []
 
+    def pick_top_and_alts(items, max_alts=3, exclude_ids=set()):
+        # unique top picks, but alternates can repeat (otherwise need a lot of api data)
+        top = next((i for i in items if i["id"] not in used_tops and i["id"] not in exclude_ids), None)
+        if top:
+            used_tops.add(top["id"])
+        alternates = random.sample([i for i in items if top and i["id"] != top["id"]],
+                                   min(max_alts, len([i for i in items if top and i["id"] != top["id"]])))
+        return top, alternates
+
     for day in range(1, days + 1):
-        # morning cafe
-        morning = next((c for c in cafes if c["id"] not in used_cafes), None)
-        if morning: used_cafes.add(morning["id"])
-        morning_alts = [c for c in cafes if c["id"] not in used_cafes][:max_alternates]
+        morning, morning_alts = pick_top_and_alts(cafes, max_alternates)
+        lunch, lunch_alts = pick_top_and_alts(restaurants, max_alternates)
+        afternoon, afternoon_alts = pick_top_and_alts(sights, max_alternates)
+        # exclude lunch so it won't be the same as dinner
+        dinner, dinner_alts = pick_top_and_alts(restaurants, max_alternates, exclude_ids={lunch["id"]})
 
-        # lunch restaurant
-        lunch = next((r for r in restaurants if r["id"] not in used_restaurants), None)
-        if lunch: used_restaurants.add(lunch["id"])
-        lunch_alts = [r for r in restaurants if r["id"] not in used_restaurants and r["id"] != lunch["id"]][:max_alternates]
-
-        # afternoon activity
-        afternoon = next((s for s in sights if s["id"] not in used_sights), None)
-        if afternoon: used_sights.add(afternoon["id"])
-        afternoon_alts = [s for s in sights if s["id"] not in used_sights][:max_alternates]
-
-        # dinner restaurant - must not be same as lunch today
-        valid_dinner = [r for r in restaurants if r["id"] not in used_restaurants and r["id"] != lunch["id"]]
-        dinner = valid_dinner[0] if valid_dinner else None
-        if dinner: used_restaurants.add(dinner["id"])
-        dinner_alts = valid_dinner[1:1+max_alternates] if len(valid_dinner) > 1 else []
-
-        # combine top & alternates
-        day_plan = {
+        itinerary.append({
             "day": day,
-            "morning": { "top": morning, "alternates": morning_alts},
-            "lunch": { "top": lunch, "alternates": lunch_alts},
-            "afternoon": { "top": afternoon, "alternates": afternoon_alts},
-            "dinner": { "top": dinner, "alternates": dinner_alts}
-        }
-        itinerary.append(day_plan)
+            "morning": {"top": morning, "alternates": morning_alts},
+            "lunch": {"top": lunch, "alternates": lunch_alts},
+            "afternoon": {"top": afternoon, "alternates": afternoon_alts},
+            "dinner": {"top": dinner, "alternates": dinner_alts},
+        })
 
     return itinerary
 
