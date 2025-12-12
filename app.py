@@ -29,7 +29,7 @@ def get_yelp(city, category, limit=20):
 
 # function for afternoon activities w/ multiple categories to prevent repetition
 def get_afternoon_activities(city):
-    categories = ["arts", "landmarks", "museums", "shopping", "parks"]
+    categories = ["arts", "landmarks", "museums", "parks"]
     activities = []
     for category in categories:
         activities.extend(get_yelp(city, category))
