@@ -1,0 +1,14 @@
+I used AI to understand how Jinja2 macros work (for results.html).
+I noticed that I had a ton of repetitive code while I was writing my itinerary display code, and I realized
+that there is definitely a better method out there to simplify repetitive html codes.
+
+Here is the prompt I asked AI: "If I have a lot of repetitive html code, can I make a template or something within
+the program to make it more concise? How? I am using Flask."
+
+The AI gave me a few different options for Jinja2 Templates, and listed things like base templates, reusable components,
+Jinja loops, and Macros. It described Macros as reusable functions, which seemed the most applicable for my situation.
+I used AI to break explain how Macros work to pass in different data. I then used that knowledge to apply to my project.
+
+I also used AI to ask how to customize html webpages without bootstrap, and it told me to make my own css file.
+I took that recommendation and looked at youtube videos and google to learn how to use basic css. I also asked AI how
+to change the default input box field formatting (and the user-input font), since that was something I was stuck on.

@@ -1,0 +1,79 @@
+<!-- show itinerary results -->
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="results-container">
+    <!-- back button -->
+    <a href="/" class="btn yelp back">Back to Search</a>
+
+    <h1>
+        Itinerary for <span style="color: var(--yelp-red);">{{ city }}</span>
+    </h1>
+    <p class="subheading">
+        Here is a suggested itinerary of places to visit during your stay!
+    </p>
+
+<!-- macro for each slot -->
+{% macro render_section(title, business) %}
+<div class="itinerary-section">
+    <h3>{{ title }}</h3>
+
+    {% if business.top %}
+    <div class="business-card">
+        {% if business.top.image_url %}
+        <div class="business-image">
+            <img src="{{ business.top.image_url }}" alt="{{ business.top.name }}">
+        </div>
+        {% endif %}
+
+        <div class="business-info">
+            <p><strong>Top Suggestion:</strong>
+                <a href="{{ business.top.url }}" target="_blank">{{ business.top.name }}</a>
+            </p>
+            <p>Rating: {{ business.top.rating }} ★</p>
+
+            {% if business.top.categories %}
+            <p>Categories:
+                {% for c in business.top.categories %}
+                    {{ c.title }}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            {% endif %}
+
+            {% if business.alternates %}
+            <p><strong>Alternate Suggestions:</strong>
+            <ul>
+                {% for alt in business.alternates %}
+                    <li>
+                        <a href="{{ alt.url }}" target="_blank">{{ alt.name }}</a> - Rating: {{ alt.rating }} ★
+                    </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <p>No suggestions available.</p>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% if itinerary|length > 0 %}
+    {% for day in itinerary %}
+    <div class="day-card">
+        <h2 class="display" style="color: #6B6D6F;"> Day {{ day.day }}</h2>
+            {{ render_section("Morning (Cafe)", day.morning) }}
+            {{ render_section("Lunch (Restaurant)", day.lunch) }}
+            {{ render_section("Afternoon Activity", day.afternoon) }}
+            {{ render_section("Dinner (Restaurant)", day.dinner) }}
+    </div>
+    {% endfor %}
+{% else %}
+<p>
+    No results were found for "{{ city }}".
+</p>
+{% endif %}
+
+{% endblock %}
